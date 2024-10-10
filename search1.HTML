@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+            margin: 20px auto;
+            max-width: 600px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+        label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #5c67f2;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4a54e1;
+        }
+        .results-container {
+            margin-top: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            max-width: 600px;
+        }
+        .result-item {
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search</h1>
+    <div class="search-container">
+        <label for="search-input">Search:</label>
+        <input type="text" id="search-input" placeholder="Enter your search here...">
+        <button id="search-button">Search</button>
+    </div>
+
+    <div class="results-container" id="results-container">
+        <h2>Search Results:</h2>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Optional: Add JavaScript functionality to handle the search button click
+        document.getElementById('search-button').onclick = function() {
+            const query = document.getElementById('search-input').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = ''; // Clear previous results
+
+            // Example logic to display search results (replace with your actual search logic)
+            if (query) {
+                // Mock results for demonstration
+                const mockResults = [
+                    { name: 'Example Website 1', url: 'http://example1.com' },
+                    { name: 'Example Website 2', url: 'http://example2.com' },
+                    { name: 'Example Website 3', url: 'http://example3.com' }
+                ];
+
+                mockResults.forEach(result => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    resultItem.innerHTML = `<a href="${result.url}" target="_blank">${result.name}</a>`;
+                    resultsDiv.appendChild(resultItem);
+                });
+            } else {
+                resultsDiv.innerHTML = '<p>Please enter a search query.</p>';
+            }
+        };
+    </script>
+</body>
+</html>
