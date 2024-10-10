@@ -3,53 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guliko Search</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        #search-container { display: flex; align-items: center; margin-bottom: 20px; }
-        #search-label { margin-right: 10px; }
-        #results { margin-top: 20px; }
-        .result-item { margin: 5px 0; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Messenger</title>
 </head>
 <body>
-
-    <div id="search-container">
-        <label id="search-label" for="search-input">Search:</label>
-        <input type="text" id="search-input" placeholder="Enter your search query...">
-        <button id="search-button">Search</button>
+    <div class="chat-container">
+        <div class="messages" id="messages"></div>
+        <input id="message-input" type="text" placeholder="Type a message..." autofocus>
+        <button id="send-button">Send</button>
     </div>
 
-    <div id="results"></div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
     <script>
-        document.getElementById('search-button').onclick = function() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = ''; // Clear previous results
+        const socket = io();
 
-            // Make AJAX call to fetch the registry.json file
-            fetch('/path/to/your/registry.json') // Update with the correct path
-                .then(response => response.json())
-                .then(data => {
-                    const results = data.filter(item => item.name.toLowerCase().includes(query));
-                    if (results.length > 0) {
-                        results.forEach(result => {
-                            const resultItem = document.createElement('div');
-                            resultItem.className = 'result-item';
-                            resultItem.innerHTML = `<a href="${result.url}" target="_blank">${result.name}</a>`;
-                            resultsDiv.appendChild(resultItem);
-                        });
-                    } else {
-                        resultsDiv.innerHTML = '<p>No results found.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    resultsDiv.innerHTML = '<p>Error fetching results.</p>';
-                });
-        };
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        sendButton.addEventListener('click', () => {
+            const message = messageInput.value;
+            socket.send(message);
+            messageInput.value = '';
+        });
+
+        socket.on('message', (msg) => {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = msg;
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom
+        });
     </script>
-
 </body>
 </html>
