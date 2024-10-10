@@ -24,27 +24,24 @@
 
     <script>
         document.getElementById('search-button').onclick = function() {
-            const query = document.getElementById('search-input').value;
+            const query = document.getElementById('search-input').value.toLowerCase();
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = ''; // Clear previous results
 
-            // Make AJAX call to the search servlet
-            fetch('/your-web-app-name/search?query=' + encodeURIComponent(query))
+            // Make AJAX call to fetch the registry.json file
+            fetch('/path/to/your/registry.json') // Update with the correct path
                 .then(response => response.json())
                 .then(data => {
-                    if (data.length > 0) {
-                        data.forEach(result => {
+                    const results = data.filter(item => item.name.toLowerCase().includes(query));
+                    if (results.length > 0) {
+                        results.forEach(result => {
                             const resultItem = document.createElement('div');
                             resultItem.className = 'result-item';
-                            if (result.url) {
-                                resultItem.innerHTML = `<a href="${result.url}" target="_blank">${result.name}</a>`;
-                            } else {
-                                resultItem.innerHTML = '<p>No results found</p>';
-                            }
+                            resultItem.innerHTML = `<a href="${result.url}" target="_blank">${result.name}</a>`;
                             resultsDiv.appendChild(resultItem);
                         });
                     } else {
-                        resultsDiv.innerHTML = '<p>Please enter a search query.</p>';
+                        resultsDiv.innerHTML = '<p>No results found.</p>';
                     }
                 })
                 .catch(error => {
