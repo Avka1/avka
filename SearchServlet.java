@@ -42,7 +42,7 @@ public class SearchServlet extends HttpServlet {
 
     private List<RegistryEntry> readRegistry() {
         try {
-            FileReader reader = new FileReader("path/to/your/registry.json"); // Update with the correct path
+            FileReader reader = new FileReader("registry.json"); // Update with the correct path
             return new Gson().fromJson(reader, new TypeToken<List<RegistryEntry>>() {}.getType());
         } catch (IOException e) {
             e.printStackTrace();
