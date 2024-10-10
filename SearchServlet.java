@@ -1,55 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guliko Search</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        #search-container { display: flex; align-items: center; margin-bottom: 20px; }
-        #search-label { margin-right: 10px; }
-        #results { margin-top: 20px; }
-        .result-item { margin: 5px 0; }
-    </style>
-</head>
-<body>
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-    <div id="search-container">
-        <label id="search-label" for="search-input">Search:</label>
-        <input type="text" id="search-input" placeholder="Enter your search query...">
-        <button id="search-button">Search</button>
-    </div>
+@WebServlet("/search")
+public class SearchServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        // Get the search query from the request
+        String query = request.getParameter("query");
+        
+        // Read from registry.json
+        List<RegistryEntry> registryEntries = readRegistry();
+        List<RegistryEntry> results = new ArrayList<>();
 
-    <div id="results"></div>
+        if (query != null && !query.isEmpty()) {
+            for (RegistryEntry entry : registryEntries) {
+                if (entry.getName().toLowerCase().contains(query.toLowerCase())) {
+                    results.add(entry);
+                }
+            }
+        }
 
-    <script>
-        document.getElementById('search-button').onclick = function() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = ''; // Clear previous results
+        // Set response type to JSON
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        Gson gson = new Gson();
+        out.print(gson.toJson(results));
+        out.flush();
+    }
 
-            // Make AJAX call to fetch the registry.json file
-            fetch('/path/to/your/registry.json') // Update with the correct path
-                .then(response => response.json())
-                .then(data => {
-                    const results = data.filter(item => item.name.toLowerCase().includes(query));
-                    if (results.length > 0) {
-                        results.forEach(result => {
-                            const resultItem = document.createElement('div');
-                            resultItem.className = 'result-item';
-                            resultItem.innerHTML = `<a href="${result.url}" target="_blank">${result.name}</a>`;
-                            resultsDiv.appendChild(resultItem);
-                        });
-                    } else {
-                        resultsDiv.innerHTML = '<p>No results found.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    resultsDiv.innerHTML = '<p>Error fetching results.</p>';
-                });
-        };
-    </script>
+    private List<RegistryEntry> readRegistry() {
+        try {
+            FileReader reader = new FileReader("path/to/your/registry.json"); // Update with the correct path
+            return new Gson().fromJson(reader, new TypeToken<List<RegistryEntry>>() {}.getType());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 
-</body>
-</html>
+    private static class RegistryEntry {
+        private String name;
+        private String url;
+
+        public String getName() {
+            return name;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+    }
+}
